@@ -18,8 +18,8 @@ $wordpress_options = array(
 
 $wordpress_admin_user = array(
 	"email" => "lawson.kurtz@gmail.com",
-	"username" => "xyz-admin",
-	"password" => "xyz1234.$"
+	"username" => "admin",
+	"password" => "this-is-a-password"
 );
 
 // System-Specific
@@ -27,4 +27,33 @@ $mysql = array(
 	"username" => "master",
 	"password" => "master",
 	"host" => "localhost"
+);
+
+$pages = array(
+	array(
+		"post_title" => "Page 1",
+		"post_content" => "[lipsum]"
+		"post_status" => "publish",
+	),
+  array(
+    "post_title" => "Page 2",
+    "post_content" => "[lipsum]"
+    "post_status" => "publish",
+  ),
+  array(
+    "post_title" => "Page 3",
+    "post_content" => "[lipsum]"
+    "post_status" => "publish",
+  ),
+  array(
+    "post_title" => "Page 4",
+    "post_content" => "[lipsum]"
+    "post_status" => "publish",
+  ),
+  array(
+    "post_title" => "Page 5",
+    "post_content" => "[lipsum]"
+    "post_status" => "publish",
+  ),
+
 );

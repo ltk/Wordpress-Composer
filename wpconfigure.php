@@ -195,6 +195,10 @@ function after_wordpress_install_buffer( $buffer ) {
 			write_to_command_line("WordPress database NOT upgraded.");
 		}
 
+		// Delete default posts
+		wp_delete_post( 1, true );
+		wp_delete_post( 2, true );
+
 		// TODO: make the site url customizable
 		exec('open http://composertest.com/wp-admin/');
 	} else {
