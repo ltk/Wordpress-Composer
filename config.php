@@ -1,6 +1,6 @@
 <?php
 // Project-Specific
-$install_path = "~/Sites/New-WordPress-Site";
+$install_path = "~/Sites/XYZ-WordPress-Site/wordpress";
 
 $new_database = array(
 	"username" => "xyz",
@@ -12,11 +12,12 @@ $new_database = array(
 
 $wordpress_options = array(
 	"title" => "Default Title",
-	"allow_search_engines" => false
+	"allow_search_engines" => 0,
+	"url" => "http://composertest.com"
 );
 
 $wordpress_admin_user = array(
-	"email" => "lkurtz@thejakegroup.com"
+	"email" => "lawson.kurtz@gmail.com",
 	"username" => "xyz-admin",
 	"password" => "xyz1234.$"
 );

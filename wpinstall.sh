@@ -14,6 +14,9 @@ tar -zxvf latest.tar.gz
 rm latest.tar.gz
 
 cd wordpress
+touch .htaccess
+# TODO... don't make .htaccess 777
+chmod 777 .htaccess
 
 mkdir environment
 
@@ -26,7 +29,7 @@ mv retlehs-roots* roots
 touch roots/.htaccess
 
 rm roots.zip 
-rm -r twentyeleven
+# rm -r twentyeleven
 rm -r twentyten
 rm -r twentytwelve
 
@@ -76,11 +79,15 @@ git init
 
 git add .
 
-git commit -m 'Autoinstall complete.'
+git commit -m 'Auto-download.'
 
 cd ..
 
-php ~/Projects/Wordpress\ Setup/WP-Composer/wpconfigure.php path="$1"
+php ~/Projects/Wordpress-Setup/WP-Composer/wpconfigure.php path="$1"
+
+cd $1
+git add .
+git commit -m 'WordPress Installed'
 
 else
  echo "Please pass your project config file path as an argument."
