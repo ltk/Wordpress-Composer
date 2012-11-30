@@ -80,8 +80,8 @@ git commit -m 'Autoinstall complete.'
 
 cd ..
 
-php ~/Projects/Wordpress\ Setup/WP-Composer/wpconfigure.sh path="$1"
+php ~/Projects/Wordpress\ Setup/WP-Composer/wpconfigure.php path="$1"
 
 else
- echo "Please pass your desired project path as an argument."
+ echo "Please pass your project config file path as an argument."
 fi

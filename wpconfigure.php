@@ -1,67 +1,90 @@
 <?php
 parse_str(implode('&', array_slice($argv, 1)), $_GET);
-//$wp_dir = $_GET['path']. "/wordpress";
-
 $config_file_path = $_GET['path'];
+
 require( $config_file_path );
 
-$wp_dir = $install_path;
+write_to_command_line("Firing up the ole PHP script...");
 
-fwrite(STDOUT, "Firing up the ole PHP script...\n");
+run( $wp_dir );
 
+function run( $install_path, $new_database, $mysql ) {
+  modify_wp_config( $wp_dir );
+  create_env_loader( $wp_dir );
+  create_dev_env( $wp_dir );
+  setup_mysql_db( $new_database, $mysql );
+}
 
-//Project DB Access Details
-$user = "sixteen";
-$pass = "test-password-1";
-$dbase = "this-is-a-test";
-$host = "localhost";
-$prefix = "wp_";
+function write_to_command_line( $message ) {
+  fwrite(STDOUT, $message . "\n");
+}
 
-function setup_mysql_db($database_name) {
-	global $user,$pass,$dbase,$host,$prefix;
-	$mysql_user = "master";
-	$mysql_password = "master";
-	$mysql_host = "localhost";
+function connect_to_mysql( $host, $username, $password ) {
+  $connection = mysql_connect( $host, $username, $password );
 
-	$con = mysql_connect($mysql_host,$mysql_user,$mysql_password);
-	if (!$con)
-	  {
-	  fwrite(STDOUT, "Can't connect to MySQL.\n");
-	  # die('Could not connect: ' . mysql_error());
-	  }
-	 else {
-	 	fwrite(STDOUT, "Connected to MySQL.\n");
-	 }
+  if( $connection ) {
+    write_to_command_line("Connected to MySQL.");
+    return $connection;
+  } else {
+    write_to_command_line("Couldn't connect to MySQL. Check your configuration details.");
+    return false;
+  }
+}
 
-	if (mysql_query("CREATE DATABASE `$database_name`;",$con))
-	  {
-	  fwrite(STDOUT, "Database created.\n");
-	  }
-	else
-	  {
-	  fwrite(STDOUT, "Error creating database: " . mysql_error() . "\n");
-	  }
+function create_mysql_database( $database_name, $connection ) {
+  $query = "CREATE DATABASE `$database_name`;"
+  $query_result = mysql_query( $query, $connection );
+  
+  if( $query_result ) {
+    write_to_command_line("Database created.");
+    return true;
+  } else {
+    write_to_command_line("Error creating database: " . mysql_error());
+    return false;
+  }
+}
 
-  if (mysql_query("CREATE USER '$user'@'$host' IDENTIFIED BY 'password';",$con))
-    {
-    fwrite(STDOUT, "User created.\n");
+function create_mysql_user( $username, $password, $connection ) {
+  $query = "CREATE USER '$username'@'localhost' IDENTIFIED BY '$password';"
+  $query_result = mysql_query( $query, $connection );
+  
+  if( $query_result ) {
+    write_to_command_line("User created.");
+    return true;
+  } else {
+    write_to_command_line("Error creating user: " . mysql_error());
+    return false;
+  }
+}
+
+function grant_db_privileges_to_user( $database_name, $username ) {
+  $query = "GRANT ALL ON `$database_name`.* TO '$username'@'localhost';"
+  $query_result = mysql_query( $query, $connection );
+  
+  if( $query_result ) {
+    write_to_command_line("User privileges granted.");
+    return true;
+  } else {
+    write_to_command_line("Error granting user privileges: " . mysql_error());
+    return false;
+  }
+}
+
+function setup_mysql_db( $new_database, $mysql ) {
+  $connection = connect_to_mysql( $mysql['host'], $mysql['username'], $mysql['password'] );
+	
+  if( $connection ) {
+    $database_created = create_mysql_database( $new_databse['name'], $connection );
+    $user_created = create_mysql_user( $new_databse['username'], $new_databse['password'], $connection );
+
+    if( $database_created && $user_created ) {
+      grant_db_privileges_to_user( $new_databse['name'], $new_databse['username'] );
     }
-  else
-    {
-    fwrite(STDOUT, "Error creating user: " . mysql_error() . "\n");
-    }
 
-    if (mysql_query("GRANT ALL ON `$database_name`.* TO '$user'@'$host';",$con))
-      {
-      fwrite(STDOUT, "User privledges granted.\n");
-      }
-    else
-      {
-      fwrite(STDOUT, "Error granting user privledges: " . mysql_error() . "\n");
-      }
+    mysql_close( $connection );
+  } 
 
-	mysql_close($con);
-	fwrite(STDOUT, "MySQL setup function ending...\n");
+	write_to_command_line("MySQL setup complete.");
 }
 
 function curl_get_file_contents($URL) {
@@ -103,9 +126,9 @@ function modify_wp_config( $wp_dir ) {
 		$file = fopen("$wp_dir/wp-config.php", "wb");
 		fwrite($file, $wpconfig);
 		fclose($file);
-		fwrite(STDOUT, "wp-config.php successfully configured. Woo hoo.\n");
+		write_to_command_line("wp-config.php successfully configured. Woo hoo.");
 	} else {
-		fwrite(STDOUT, "You already have a wp-config.php\nWe're gonna stick with your existing configuration.\n");
+		write_to_command_line("You already have a wp-config.php\nWe're gonna stick with your existing configuration.");
 	}
 }
 
@@ -131,7 +154,7 @@ if(file_exists(__DIR__ . "/production_env.php")) {
 ?>';
 		fwrite($file_handle, $env_loader);
 		fclose($file_handle);
-		fwrite(STDOUT, "Environment loader created.\n");
+		write_to_command_line("Environment loader created.");
 	}
 }
 
@@ -150,19 +173,11 @@ $_ENV["WP_DEBUG"] = true;
 ?>';
 		fwrite($file_handle, $dev_env);
 		fclose($file_handle);
-		fwrite(STDOUT, "Development environment created.\n");
+		write_to_command_line("Development environment created.");
 	}
 }
 
-function run( $wp_dir ) {
-	global $dbase;
-	modify_wp_config( $wp_dir );
-	create_env_loader( $wp_dir );
-	create_dev_env( $wp_dir );
-	setup_mysql_db( $dbase );
-}
 
-run( $wp_dir );
 
 
 ?>

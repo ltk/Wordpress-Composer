@@ -5,7 +5,7 @@ $install_path = "~/Sites/New-WordPress-Site";
 $new_database = array(
 	"username" => "xyz",
 	"password" => "xyz1234.$",
-	"database" => "xyz_wordpress",
+	"name" => "xyz_wordpress",
 	"host" => "localhost",
 	"prefix" => "wp_"
 );
