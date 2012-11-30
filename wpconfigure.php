@@ -17,6 +17,8 @@ function run( $install_path, $new_database, $mysql, $wordpress_options, $wordpre
   setup_mysql_db( $new_database, $mysql );
 
   install_wordpress( $install_path, $wordpress_options, $wordpress_admin_user );
+
+  add_pages( $pages );
 }
 
 function write_to_command_line( $message ) {
@@ -227,5 +229,25 @@ function install_wordpress( $install_path, $wordpress_options, $wordpress_admin_
 	ob_start( "after_wordpress_install_buffer" );
 	require( $install_file_path );
 	ob_end_flush();
+}
+
+function add_pages( $pages ) {
+	$user_id = 1;
+}
+
+function add_page( $page ) {
+	$defaults = array(
+		"post_title" => "Lorem Ipsum",
+		"post_content" => "[lipsum]",
+		"post_type" => "page",
+		"post_status" => "publish",
+		"post_date" => date('Y-m-d H:i:s'),
+		"post_author" => 1
+	);
+
+	$page = wp_parse_args( $page, $defaults );
+
+	wp_insert_post($page);
+
 }
 ?>
